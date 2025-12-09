@@ -994,7 +994,7 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
                                 .scale(k),
                         )
                     }
-                })
+                }, { passive: false })
                 .attr("cursor", "move")
         }
 
