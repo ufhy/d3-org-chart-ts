@@ -705,7 +705,10 @@ export class OrgChart {
                 .wheelDelta((event) => {
                     if (event.ctrlKey) {
                         event.preventDefault()
-                        return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) * (event.ctrlKey ? 10 : 1)
+
+                        const isPinchGesture = event.ctrlKey && event.deltaMode === 0 && Math.abs(event.deltaY) < 50;
+                        const isCtrlScrollReal = event.ctrlKey && Math.abs(event.deltaY) >= 50;
+                        return -event.deltaY * (event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002) * (isPinchGesture ? 10 : isCtrlScrollReal ? 1 : 1)
                     }
 
                     return 0
