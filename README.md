@@ -4,7 +4,7 @@ A fully type-safe TypeScript implementation of the D3-based organizational chart
 
 > **Original Source**: This project is based on [bumbeishvili/org-chart](https://github.com/bumbeishvili/org-chart)  
 > Converted to TypeScript with full type safety and modern tooling.
-> Generate using [Claude Code](https://claude.com/product/claude-code) and [Antigravity](https://antigravity.google/) `:sweat_smile:`
+> Generate using [Claude Code](https://claude.com/product/claude-code) and [Antigravity](https://antigravity.google/) :sweat_smile:
 
 ![D3.js](https://img.shields.io/badge/D3.js-v7-orange)
 ![Vite](https://img.shields.io/badge/Vite-Rolldown-646cff)
