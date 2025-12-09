@@ -42,7 +42,10 @@ export interface OrgChartNodeData {
 /**
  * Extended hierarchy node with layout-specific properties
  */
-export interface OrgChartNode extends HierarchyNode<OrgChartNodeData> {
+/**
+ * Extended hierarchy node with layout-specific properties
+ */
+export interface OrgChartNode<Datum = any> extends HierarchyNode<Datum & OrgChartNodeData> {
   // Position coordinates
   x: number;
   y: number;
@@ -56,31 +59,31 @@ export interface OrgChartNode extends HierarchyNode<OrgChartNodeData> {
   // Compact layout properties
   flexCompactDim?: [number, number];
   firstCompact?: boolean;
-  firstCompactNode?: OrgChartNode;
+  firstCompactNode?: OrgChartNode<Datum>;
   compactEven?: boolean;
   row?: number;
 
   // Collapsed children
-  _children?: OrgChartNode[];
+  _children?: OrgChartNode<Datum>[];
 
   // Paging button visibility
   _pagingButton?: boolean;
 
   // Override parent/children types to be OrgChartNode
   // Using 'this' type to maintain type compatibility with HierarchyNode
-  parent: this | null;
-  children?: this[];
+  parent: OrgChartNode<Datum> | null;  // Explicit naming is clearer than 'this' with generics
+  children?: OrgChartNode<Datum>[];
 }
 
 /**
  * Connection between two nodes (for custom relationships)
  */
-export interface Connection {
+export interface Connection<Datum = any> {
   from: string | number;
   to: string | number;
   label?: string;
-  _source?: OrgChartNode;
-  _target?: OrgChartNode;
+  _source?: OrgChartNode<Datum>;
+  _target?: OrgChartNode<Datum>;
 }
 
 // ============================================================================
@@ -90,67 +93,70 @@ export interface Connection {
 /**
  * Generic accessor function for extracting values from nodes
  */
-export type NodeAccessor<T> = (node: OrgChartNode) => T;
+/**
+ * Generic accessor function for extracting values from nodes
+ */
+export type NodeAccessor<Result, Datum = any> = (node: OrgChartNode<Datum>) => Result;
 
 /**
  * Accessor that can work with raw data
  */
-export type DataAccessor<T> = (data: OrgChartNodeData) => T;
+export type DataAccessor<Result, Datum = any> = (data: Datum) => Result;
 
 /**
  * Zoom event callbacks
  */
-export type ZoomCallback = (event: D3ZoomEvent<SVGSVGElement, OrgChartNodeData>) => void;
+export type ZoomCallback<Datum = any> = (event: D3ZoomEvent<SVGSVGElement, Datum>) => void;
 
 /**
  * Node interaction callbacks
  */
-export type NodeClickCallback = (node: OrgChartNode) => OrgChartNode;
-export type NodeExpandCollapseCallback = (node: OrgChartNode) => OrgChartNode;
+export type NodeClickCallback<Datum = any> = (node: OrgChartNode<Datum>) => void;
+export type NodeExpandCollapseCallback<Datum = any> = (node: OrgChartNode<Datum>) => void;
 
 /**
  * Node content generators (return HTML strings)
  */
-export type NodeContentCallback = (node: OrgChartNode) => string;
+export type NodeContentCallback<Datum = any> = (node: OrgChartNode<Datum>) => string;
 
 /**
  * Button content callback with state context
  */
-export interface ButtonContentArgs {
-  node: OrgChartNode;
-  state: OrgChartAttrs;
+export interface ButtonContentArgs<Datum = any> {
+  node: OrgChartNode<Datum>;
+  state: OrgChartAttrs<Datum>;
 }
-export type ButtonContentCallback = (args: ButtonContentArgs) => string;
+export type ButtonContentCallback<Datum = any> = (args: ButtonContentArgs<Datum>) => string;
 
 /**
  * Paging button callback
  */
-export type PagingButtonCallback = (
-  node: OrgChartNode,
+export type PagingButtonCallback<Datum = any> = (
+  node: OrgChartNode<Datum>,
   index: number,
-  array: OrgChartNode[],
-  state: OrgChartAttrs
+  array: OrgChartNode<Datum>[],
+  state: OrgChartAttrs<Datum>
 ) => string;
 
 /**
  * Node update callbacks for DOM manipulation
  */
-export type NodeUpdateCallback = (
+export type NodeUpdateCallback<Datum = any> = (
   this: SVGGElement,
-  node: OrgChartNode,
+  node: OrgChartNode<Datum>,
   index: number,
   groups: SVGGElement[] | ArrayLike<SVGGElement>
 ) => void;
 
-export type NodeEnterCallback = (node: OrgChartNode) => OrgChartNode;
-export type NodeExitCallback = (node: OrgChartNode) => OrgChartNode;
+export type NodeEnterCallback<Datum = any> = (node: OrgChartNode<Datum>) => OrgChartNode<Datum>;
+export type NodeExitCallback<Datum = any> = (node: OrgChartNode<Datum>) => OrgChartNode<Datum>;
 
 /**
  * Link update callback for DOM manipulation
  */
-export type LinkUpdateCallback = (
+export type LinkUpdateCallback<Datum = any> = (
   this: SVGPathElement,
-  node: OrgChartNode,
+  node: OrgChartNode<Datum>,
   index: number,
   groups: SVGPathElement[] | ArrayLike<SVGPathElement>
 ) => void;
@@ -158,10 +164,17 @@ export type LinkUpdateCallback = (
 /**
  * Defs (SVG definitions) generator callback
  */
-export type DefsCallback = (
-  state: OrgChartAttrs,
-  connections: Connection[]
+export type DefsCallback<Datum = any> = (
+  state: OrgChartAttrs<Datum>,
+  connections: Connection<Datum>[]
 ) => string;
+
+export type ConnectionsUpdateCallback<Datum = any> = (
+  this: SVGPathElement,
+  d: Connection<Datum>,
+  i: number,
+  arr: SVGPathElement[] | ArrayLike<SVGPathElement>
+) => void;
 
 // ============================================================================
 // Layout System Types
@@ -193,21 +206,21 @@ export interface Point {
 /**
  * Compact dimension sizing functions
  */
-export interface CompactDimension {
-  sizeColumn: (node: OrgChartNode) => number;
-  sizeRow: (node: OrgChartNode) => number;
+export interface CompactDimension<Datum = any> {
+  sizeColumn: (node: OrgChartNode<Datum>) => number;
+  sizeRow: (node: OrgChartNode<Datum>) => number;
   reverse: <T>(arr: T[]) => T[];
 }
 
 /**
  * Layout-specific coordinate and rendering functions
  */
-export interface LayoutBinding {
+export interface LayoutBinding<Datum = any> {
   // Node boundary positions
-  nodeLeftX: (node: OrgChartNode) => number;
-  nodeRightX: (node: OrgChartNode) => number;
-  nodeTopY: (node: OrgChartNode) => number;
-  nodeBottomY: (node: OrgChartNode) => number;
+  nodeLeftX: (node: OrgChartNode<Datum>) => number;
+  nodeRightX: (node: OrgChartNode<Datum>) => number;
+  nodeTopY: (node: OrgChartNode<Datum>) => number;
+  nodeBottomY: (node: OrgChartNode<Datum>) => number;
 
   // Animation entry points
   nodeJoinX: (params: PositionParams) => number;
@@ -216,24 +229,24 @@ export interface LayoutBinding {
   // Link connection points
   linkJoinX: (params: PositionParams) => number;
   linkJoinY: (params: PositionParams) => number;
-  linkX: (node: OrgChartNode) => number;
-  linkY: (node: OrgChartNode) => number;
-  linkParentX: (node: OrgChartNode) => number;
-  linkParentY: (node: OrgChartNode) => number;
+  linkX: (node: OrgChartNode<Datum>) => number;
+  linkY: (node: OrgChartNode<Datum>) => number;
+  linkParentX: (node: OrgChartNode<Datum>) => number;
+  linkParentY: (node: OrgChartNode<Datum>) => number;
 
   // Compact layout link positions
-  linkCompactXStart: (node: OrgChartNode) => number;
-  linkCompactYStart: (node: OrgChartNode) => number;
-  compactLinkMidX: (node: OrgChartNode, state: OrgChartAttrs) => number;
-  compactLinkMidY: (node: OrgChartNode, state: OrgChartAttrs) => number;
+  linkCompactXStart: (node: OrgChartNode<Datum>) => number;
+  linkCompactYStart: (node: OrgChartNode<Datum>) => number;
+  compactLinkMidX: (node: OrgChartNode<Datum>, state: OrgChartAttrs<Datum>) => number;
+  compactLinkMidY: (node: OrgChartNode<Datum>, state: OrgChartAttrs<Datum>) => number;
 
   // Button positioning
-  buttonX: (node: OrgChartNode) => number;
-  buttonY: (node: OrgChartNode) => number;
+  buttonX: (node: OrgChartNode<Datum>) => number;
+  buttonY: (node: OrgChartNode<Datum>) => number;
 
   // Transform functions
-  centerTransform: (params: { root: OrgChartNode; rootMargin: number; scale: number; centerX: number; centerY: number }) => string;
-  nodeUpdateTransform: (node: OrgChartNode, state: OrgChartAttrs) => string;
+  centerTransform: (params: { root: OrgChartNode<Datum>; rootMargin: number; scale: number; centerX: number; centerY: number }) => string;
+  nodeUpdateTransform: (node: OrgChartNode<Datum>, state: OrgChartAttrs<Datum>) => string;
   zoomTransform: (transform: { x: number; y: number; k: number }) => string;
 
   // Flex layout
@@ -242,12 +255,12 @@ export interface LayoutBinding {
     width: number;
     siblingsMargin: number;
     childrenMargin: number;
-    state: OrgChartAttrs;
-    node: OrgChartNode;
+    state: OrgChartAttrs<Datum>;
+    node: OrgChartNode<Datum>;
   }) => [number, number];
 
   // Compact dimensions
-  compactDimension: CompactDimension;
+  compactDimension: CompactDimension<Datum>;
 
   // Link path generators
   diagonal: (
@@ -265,7 +278,7 @@ export interface LayoutBinding {
   ) => string;
 
   // Coordinate swap for layout transformations
-  swap: (node: OrgChartNode) => void;
+  swap: (node: OrgChartNode<Datum>) => void;
 }
 
 // ============================================================================
@@ -296,7 +309,7 @@ export interface TextMeasurementParams {
 /**
  * Complete chart configuration and state
  */
-export interface OrgChartAttrs {
+export interface OrgChartAttrs<Datum = any> {
   // ========== Internal/Private Properties ==========
   id: string;
   firstDraw: boolean;
@@ -305,18 +318,18 @@ export interface OrgChartAttrs {
   nodeDefaultBackground: string;
   lastTransform: { x: number; y: number; k: number };
   allowedNodesCount: Record<string, number>;
-  zoomBehavior: ZoomBehavior<SVGSVGElement, OrgChartNodeData> | null;
-  generateRoot: ((data: OrgChartNodeData[]) => OrgChartNode) | null;
+  zoomBehavior: ZoomBehavior<SVGSVGElement, Datum> | null;
+  generateRoot: ((data: Datum[]) => OrgChartNode<Datum>) | null;
 
   // Calculated properties
   calc?: CalcProperties;
 
   // Hierarchy data
-  allNodes?: OrgChartNode[];
-  root?: OrgChartNode;
+  allNodes?: OrgChartNode<Datum>[];
+  root?: OrgChartNode<Datum>;
 
   // Flextree layout instance
-  flexTreeLayout?: FlextreeLayout<OrgChartNode>;
+  flexTreeLayout?: FlextreeLayout<Datum>;
 
   // ========== SVG Elements ==========
   svg?: Selection<SVGSVGElement, unknown, null, undefined>;
@@ -331,34 +344,34 @@ export interface OrgChartAttrs {
   svgWidth: number;
   svgHeight: number;
   container: string | HTMLElement;
-  data: OrgChartNodeData[] | null;
-  connections: Connection[];
+  data: Datum[] | null;
+  connections: Connection<Datum>[];
   defaultFont: string;
 
   // ========== Data Accessors ==========
-  nodeId: DataAccessor<string | number>;
-  parentNodeId: DataAccessor<string | number>;
+  nodeId: DataAccessor<string | number, Datum>;
+  parentNodeId: DataAccessor<string | number, Datum>;
 
   // ========== Layout Configuration ==========
   rootMargin: number;
-  nodeWidth: NodeAccessor<number>;
-  nodeHeight: NodeAccessor<number>;
-  neighbourMargin: (node1: OrgChartNode, node2: OrgChartNode) => number;
-  siblingsMargin: NodeAccessor<number>;
-  childrenMargin: NodeAccessor<number>;
-  compactMarginPair: NodeAccessor<number>;
-  compactMarginBetween: NodeAccessor<number>;
+  nodeWidth: NodeAccessor<number, Datum>;
+  nodeHeight: NodeAccessor<number, Datum>;
+  neighbourMargin: (node1: OrgChartNode<Datum>, node2: OrgChartNode<Datum>) => number;
+  siblingsMargin: NodeAccessor<number, Datum>;
+  childrenMargin: NodeAccessor<number, Datum>;
+  compactMarginPair: NodeAccessor<number, Datum>;
+  compactMarginBetween: NodeAccessor<number, Datum>;
 
   // ========== Button Configuration ==========
-  nodeButtonWidth: NodeAccessor<number>;
-  nodeButtonHeight: NodeAccessor<number>;
-  nodeButtonX: NodeAccessor<number>;
-  nodeButtonY: NodeAccessor<number>;
+  nodeButtonWidth: NodeAccessor<number, Datum>;
+  nodeButtonHeight: NodeAccessor<number, Datum>;
+  nodeButtonX: NodeAccessor<number, Datum>;
+  nodeButtonY: NodeAccessor<number, Datum>;
 
   // ========== Behavior Configuration ==========
   linkYOffset: number;
-  pagingStep: NodeAccessor<number>;
-  minPagingVisibleNodes: NodeAccessor<number>;
+  pagingStep: NodeAccessor<number, Datum>;
+  minPagingVisibleNodes: NodeAccessor<number, Datum>;
   scaleExtent: [number, number];
   duration: number;
   imageName: string;
@@ -367,35 +380,35 @@ export interface OrgChartAttrs {
   compact: boolean;
 
   // ========== Zoom Behavior ==========
-  createZoom: (node: OrgChartNode) => ZoomBehavior<SVGSVGElement, OrgChartNodeData>;
+  createZoom: (node: OrgChartNode<Datum>) => ZoomBehavior<SVGSVGElement, Datum>;
 
   // ========== Event Callbacks ==========
-  onZoomStart: ZoomCallback;
-  onZoom: ZoomCallback;
-  onZoomEnd: ZoomCallback;
-  onNodeClick: NodeClickCallback;
-  onExpandOrCollapse: NodeExpandCollapseCallback;
+  onZoomStart: ZoomCallback<Datum>;
+  onZoom: ZoomCallback<Datum>;
+  onZoomEnd: ZoomCallback<Datum>;
+  onNodeClick: NodeClickCallback<Datum>;
+  onExpandOrCollapse: NodeExpandCollapseCallback<Datum>;
 
   // ========== Content Generators ==========
-  nodeContent: NodeContentCallback;
-  buttonContent: ButtonContentCallback;
-  pagingButton: PagingButtonCallback;
-  defs: DefsCallback;
+  nodeContent: NodeContentCallback<Datum>;
+  buttonContent: ButtonContentCallback<Datum>;
+  pagingButton: PagingButtonCallback<Datum>;
+  defs: DefsCallback<Datum>;
 
   // ========== DOM Update Callbacks ==========
-  nodeUpdate: NodeUpdateCallback;
-  nodeEnter: NodeEnterCallback;
-  nodeExit: NodeExitCallback;
-  linkUpdate: LinkUpdateCallback;
-  connectionsUpdate?: any;
+  nodeUpdate: NodeUpdateCallback<Datum>;
+  nodeEnter: NodeEnterCallback<Datum>;
+  nodeExit: NodeExitCallback<Datum>;
+  linkUpdate: LinkUpdateCallback<Datum>;
+  connectionsUpdate: ConnectionsUpdateCallback<Datum>;
 
   // ========== D3 Generators ==========
   linkGroupArc?: any;
-  hdiagonal?: (s: any, t: any, m?: any, offsets?: any) => string;
-  diagonal?: (s: any, t: any, m?: any, offsets?: any) => string;
+  hdiagonal?: (s: Point, t: Point, m?: Point | null, offsets?: any) => string;
+  diagonal?: (s: Point, t: Point, m?: Point | null, offsets?: any) => string;
 
   // ========== Layout Bindings ==========
-  layoutBindings: Record<LayoutType, LayoutBinding>;
+  layoutBindings: Record<LayoutType, LayoutBinding<Datum>>;
 }
 
 // ============================================================================
@@ -468,15 +481,15 @@ export interface UpdateParams {
  * Main OrgChart class interface
  * Note: Actual implementation uses dynamic getters/setters for all attrs properties
  */
-export interface OrgChart {
+export interface OrgChart<Datum = any> {
   // Core methods
   render(): this;
   update(params: UpdateParams): this;
   clear(): void;
-  getChartState(): OrgChartAttrs;
+  getChartState(): OrgChartAttrs<Datum>;
 
   // Data manipulation
-  addNode(obj: OrgChartNodeData): this;
+  addNode(obj: Datum): this;
   removeNode(nodeId: string | number): this;
 
   // State management
@@ -487,8 +500,8 @@ export interface OrgChart {
   clearHighlighting(): this;
 
   // Tree operations
-  collapse(node: OrgChartNode): this;
-  expand(node: OrgChartNode): this;
+  collapse(node: OrgChartNode<Datum>): this;
+  expand(node: OrgChartNode<Datum>): this;
   collapseAll(): this;
   expandAll(): this;
 

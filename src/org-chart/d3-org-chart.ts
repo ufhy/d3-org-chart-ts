@@ -36,7 +36,8 @@ import type {
     NodeEnterCallback,
     NodeExitCallback,
     LinkUpdateCallback,
-    DefsCallback
+    DefsCallback,
+    ConnectionsUpdateCallback
 } from './types';
 
 const d3 = {
@@ -56,12 +57,12 @@ const d3 = {
 }
 
 // Interface untuk method overloading (untuk IDE autocomplete)
-export interface OrgChart {
+export interface IOrgChart<Datum = any> {
     // Configuration Methods
     container(): string | HTMLElement;
     container(value: string | HTMLElement): this;
-    data(): OrgChartNodeData[] | null;
-    data(value: OrgChartNodeData[]): this;
+    data(): Datum[] | null;
+    data(value: Datum[]): this;
     svgWidth(): number;
     svgWidth(value: number): this;
     svgHeight(): number;
@@ -72,8 +73,8 @@ export interface OrgChart {
     layout(value: LayoutType): this;
     duration(): number;
     duration(value: number): this;
-    connections(): Connection[];
-    connections(value: Connection[]): this;
+    connections(): Connection<Datum>[];
+    connections(value: Connection<Datum>[]): this;
     rootMargin(): number;
     rootMargin(value: number): this;
     setActiveNodeCentered(): boolean;
@@ -88,64 +89,66 @@ export interface OrgChart {
     linkYOffset(value: number): this;
 
     // Accessor Methods
-    nodeId(): DataAccessor<string | number>;
-    nodeId(value: DataAccessor<string | number>): this;
-    parentNodeId(): DataAccessor<string | number>;
-    parentNodeId(value: DataAccessor<string | number>): this;
-    nodeWidth(): NodeAccessor<number>;
-    nodeWidth(value: NodeAccessor<number>): this;
-    nodeHeight(): NodeAccessor<number>;
-    nodeHeight(value: NodeAccessor<number>): this;
-    siblingsMargin(): NodeAccessor<number>;
-    siblingsMargin(value: NodeAccessor<number>): this;
-    childrenMargin(): NodeAccessor<number>;
-    childrenMargin(value: NodeAccessor<number>): this;
-    neighbourMargin(): (node1: OrgChartNode, node2: OrgChartNode) => number;
-    neighbourMargin(value: (node1: OrgChartNode, node2: OrgChartNode) => number): this;
-    compactMarginPair(): NodeAccessor<number>;
-    compactMarginPair(value: NodeAccessor<number>): this;
-    compactMarginBetween(): NodeAccessor<number>;
-    compactMarginBetween(value: NodeAccessor<number>): this;
-    nodeButtonWidth(): NodeAccessor<number>;
-    nodeButtonWidth(value: NodeAccessor<number>): this;
-    nodeButtonHeight(): NodeAccessor<number>;
-    nodeButtonHeight(value: NodeAccessor<number>): this;
-    nodeButtonX(): NodeAccessor<number>;
-    nodeButtonX(value: NodeAccessor<number>): this;
-    nodeButtonY(): NodeAccessor<number>;
-    nodeButtonY(value: NodeAccessor<number>): this;
-    pagingStep(): NodeAccessor<number>;
-    pagingStep(value: NodeAccessor<number>): this;
-    minPagingVisibleNodes(): NodeAccessor<number>;
-    minPagingVisibleNodes(value: NodeAccessor<number>): this;
+    nodeId(): DataAccessor<string | number, Datum>;
+    nodeId(value: DataAccessor<string | number, Datum>): this;
+    parentNodeId(): DataAccessor<string | number, Datum>;
+    parentNodeId(value: DataAccessor<string | number, Datum>): this;
+    nodeWidth(): NodeAccessor<number, Datum>;
+    nodeWidth(value: NodeAccessor<number, Datum>): this;
+    nodeHeight(): NodeAccessor<number, Datum>;
+    nodeHeight(value: NodeAccessor<number, Datum>): this;
+    siblingsMargin(): NodeAccessor<number, Datum>;
+    siblingsMargin(value: NodeAccessor<number, Datum>): this;
+    childrenMargin(): NodeAccessor<number, Datum>;
+    childrenMargin(value: NodeAccessor<number, Datum>): this;
+    neighbourMargin(): (node1: OrgChartNode<Datum>, node2: OrgChartNode<Datum>) => number;
+    neighbourMargin(value: (node1: OrgChartNode<Datum>, node2: OrgChartNode<Datum>) => number): this;
+    compactMarginPair(): NodeAccessor<number, Datum>;
+    compactMarginPair(value: NodeAccessor<number, Datum>): this;
+    compactMarginBetween(): NodeAccessor<number, Datum>;
+    compactMarginBetween(value: NodeAccessor<number, Datum>): this;
+    nodeButtonWidth(): NodeAccessor<number, Datum>;
+    nodeButtonWidth(value: NodeAccessor<number, Datum>): this;
+    nodeButtonHeight(): NodeAccessor<number, Datum>;
+    nodeButtonHeight(value: NodeAccessor<number, Datum>): this;
+    nodeButtonX(): NodeAccessor<number, Datum>;
+    nodeButtonX(value: NodeAccessor<number, Datum>): this;
+    nodeButtonY(): NodeAccessor<number, Datum>;
+    nodeButtonY(value: NodeAccessor<number, Datum>): this;
+    pagingStep(): NodeAccessor<number, Datum>;
+    pagingStep(value: NodeAccessor<number, Datum>): this;
+    minPagingVisibleNodes(): NodeAccessor<number, Datum>;
+    minPagingVisibleNodes(value: NodeAccessor<number, Datum>): this;
 
     // Callback Methods
-    nodeContent(): NodeContentCallback;
-    nodeContent(value: NodeContentCallback): this;
-    buttonContent(): ButtonContentCallback;
-    buttonContent(value: ButtonContentCallback): this;
-    pagingButton(): PagingButtonCallback;
-    pagingButton(value: PagingButtonCallback): this;
-    onNodeClick(): NodeClickCallback;
-    onNodeClick(value: NodeClickCallback): this;
-    onExpandOrCollapse(): NodeExpandCollapseCallback;
-    onExpandOrCollapse(value: NodeExpandCollapseCallback): this;
-    onZoomStart(): ZoomCallback;
-    onZoomStart(value: ZoomCallback): this;
-    onZoom(): ZoomCallback;
-    onZoom(value: ZoomCallback): this;
-    onZoomEnd(): ZoomCallback;
-    onZoomEnd(value: ZoomCallback): this;
-    nodeUpdate(): NodeUpdateCallback;
-    nodeUpdate(value: NodeUpdateCallback): this;
-    nodeEnter(): NodeEnterCallback;
-    nodeEnter(value: NodeEnterCallback): this;
-    nodeExit(): NodeExitCallback;
-    nodeExit(value: NodeExitCallback): this;
-    linkUpdate(): LinkUpdateCallback;
-    linkUpdate(value: LinkUpdateCallback): this;
-    defs(): DefsCallback;
-    defs(value: DefsCallback): this;
+    nodeContent(): NodeContentCallback<Datum>;
+    nodeContent(value: NodeContentCallback<Datum>): this;
+    buttonContent(): ButtonContentCallback<Datum>;
+    buttonContent(value: ButtonContentCallback<Datum>): this;
+    pagingButton(): PagingButtonCallback<Datum>;
+    pagingButton(value: PagingButtonCallback<Datum>): this;
+    onNodeClick(): NodeClickCallback<Datum>;
+    onNodeClick(value: NodeClickCallback<Datum>): this;
+    onExpandOrCollapse(): NodeExpandCollapseCallback<Datum>;
+    onExpandOrCollapse(value: NodeExpandCollapseCallback<Datum>): this;
+    onZoomStart(): ZoomCallback<Datum>;
+    onZoomStart(value: ZoomCallback<Datum>): this;
+    onZoom(): ZoomCallback<Datum>;
+    onZoom(value: ZoomCallback<Datum>): this;
+    onZoomEnd(): ZoomCallback<Datum>;
+    onZoomEnd(value: ZoomCallback<Datum>): this;
+    nodeUpdate(): NodeUpdateCallback<Datum>;
+    nodeUpdate(value: NodeUpdateCallback<Datum>): this;
+    nodeEnter(): NodeEnterCallback<Datum>;
+    nodeEnter(value: NodeEnterCallback<Datum>): this;
+    nodeExit(): NodeExitCallback<Datum>;
+    nodeExit(value: NodeExitCallback<Datum>): this;
+    linkUpdate(): LinkUpdateCallback<Datum>;
+    linkUpdate(value: LinkUpdateCallback<Datum>): this;
+    connectionsUpdate(): ConnectionsUpdateCallback<Datum>;
+    connectionsUpdate(value: ConnectionsUpdateCallback<Datum>): this;
+    defs(): DefsCallback<Datum>;
+    defs(value: DefsCallback<Datum>): this;
     lastTransform(): { x: number; y: number; k: number };
     lastTransform(value: { x: number; y: number; k: number }): this;
 
@@ -155,15 +158,15 @@ export interface OrgChart {
         accessor: (item: T) => K,
         aggregator: (group: T[]) => any
     ): [string, any][];
-    calculateCompactFlexDimensions(root: OrgChartNode): void;
-    calculateCompactFlexPositions(root: OrgChartNode): void;
+    calculateCompactFlexDimensions(root: OrgChartNode<Datum>): void;
+    calculateCompactFlexPositions(root: OrgChartNode<Datum>): void;
 }
 
-export class OrgChart {
-    private attrs: OrgChartAttrs;
+export class OrgChart<Datum = any> implements IOrgChart<Datum> {
+    private attrs: OrgChartAttrs<Datum>;
 
     // Public getter for accessing chart state
-    getChartState: () => OrgChartAttrs;
+    getChartState: () => OrgChartAttrs<Datum>;
 
     // Dynamic properties (added via getter/setter pattern)
     [key: string]: any;
@@ -171,7 +174,7 @@ export class OrgChart {
     constructor() {
 
         // Exposed variables  test test
-        const attrs: OrgChartAttrs = {
+        const attrs: OrgChartAttrs<Datum> = {
 
             /* NOT INTENDED FOR PUBLIC OVERRIDE */
 
@@ -193,8 +196,8 @@ export class OrgChart {
             data: null, // Set data, it must be an array of objects, where hierarchy is clearly defined via id and parent ID (property names are configurable)
             connections: [], // Sets connection data, array of objects, SAMPLE:  [{from:"145",to:"201",label:"Conflicts of interest"}]
             defaultFont: "Helvetica", // Set default font
-            nodeId: d => d.nodeId || d.id, // Configure accessor for node id, default is either odeId or id
-            parentNodeId: d => d.parentNodeId || d.parentId, // Configure accessor for parent node id, default is either parentNodeId or parentId
+            nodeId: (d: Datum) => (d as any).nodeId || (d as any).id, // Configure accessor for node id, default is either odeId or id
+            parentNodeId: (d: Datum) => (d as any).parentNodeId || (d as any).parentId, // Configure accessor for parent node id, default is either parentNodeId or parentId
             rootMargin: 40, // Configure how much root node is offset from top
             nodeWidth: _ => 250, // Configure each node width, use with caution, it is better to have the same value set for all nodes
             nodeHeight: _ => 150,  //  Configure each node height, use with caution, it is better to have the same value set for all nodes
@@ -247,7 +250,7 @@ export class OrgChart {
             * d=>d._expanded - when node is expanded
             * d=>d.data._centered - when node is centered
             */
-            nodeContent: (d: OrgChartNode) => `<div style="padding:5px;font-size:10px;">Sample Node(id=${d.data.id}), override using <br/> 
+            nodeContent: (d: OrgChartNode<Datum>) => `<div style="padding:5px;font-size:10px;">Sample Node(id=${(d.data as any).id}), override using <br/> 
             <code>chart.nodeContent({data}=>{ <br/>
              &nbsp;&nbsp;&nbsp;&nbsp;return '' // Custom HTML <br/>
              })</code>
@@ -257,14 +260,14 @@ export class OrgChart {
 
 
             /* Node expand & collapse button content and styling. You can access same helper methods as above */
-            buttonContent: ({ node, state }: { node: OrgChartNode; state: OrgChartAttrs }) => {
+            buttonContent: ({ node, state }: { node: OrgChartNode<Datum>; state: OrgChartAttrs<Datum> }) => {
                 const iconPath = getLayoutIcon(state.layout, !!node.children);
                 const marginLeft = (state.layout === 'bottom' || state.layout === 'top') ? '1px' : '0';
                 const iconHTML = createIconSVG(iconPath, node.data._directSubordinatesPaging || 0, marginLeft);
                 return `<div style="border:1px solid #E4E2E9;border-radius:3px;padding:3px;font-size:9px;margin:auto auto;background-color:white"> ${iconHTML}  </div>`;
             },
             /* Node paging button content and styling. You can access same helper methods as above. */
-            pagingButton: (d: OrgChartNode, _i: number, _arr: OrgChartNode[], state: OrgChartAttrs) => {
+            pagingButton: (d: OrgChartNode<Datum>, _i: number, _arr: OrgChartNode<Datum>[], state: OrgChartAttrs<Datum>) => {
                 const step = state.pagingStep(d.parent!);
                 const currentIndex = d.parent!.data._pagingStep;
                 const diff = d.parent!.data._directSubordinatesPaging! - currentIndex!
@@ -280,16 +283,16 @@ export class OrgChart {
                 `
             },
             /* You can access and modify actual node DOM element in runtime using this method. */
-            nodeUpdate: function (this: SVGGElement, d: OrgChartNode, _i: number, _arr: SVGGElement[] | ArrayLike<SVGGElement>) {
+            nodeUpdate: function (this: SVGGElement, d: OrgChartNode<Datum>, _i: number, _arr: SVGGElement[] | ArrayLike<SVGGElement>) {
                 d3.select(this)
                     .select('.node-rect')
                     .attr("stroke", () => d.data._highlighted || d.data._upToTheRootHighlighted ? '#E27396' : 'none')
                     .attr("stroke-width", d.data._highlighted || d.data._upToTheRootHighlighted ? 10 : 2)
             },
-            nodeEnter: (d: OrgChartNode) => d, // Custom handling of node update
-            nodeExit: (d: OrgChartNode) => d, // Custom handling of exit node
+            nodeEnter: (d: OrgChartNode<Datum>) => d, // Custom handling of node update
+            nodeExit: (d: OrgChartNode<Datum>) => d, // Custom handling of exit node
             /* You can access and modify actual link DOM element in runtime using this method. */
-            linkUpdate: function (this: SVGPathElement, d: OrgChartNode, _i: number, _arr: SVGPathElement[] | ArrayLike<SVGPathElement>) {
+            linkUpdate: function (this: SVGPathElement, d: OrgChartNode<Datum>, _i: number, _arr: SVGPathElement[] | ArrayLike<SVGPathElement>) {
                 d3.select(this)
                     .attr("stroke", () => d.data._upToTheRootHighlighted ? '#E27396' : '#E4E2E9')
                     .attr("stroke-width", () => d.data._upToTheRootHighlighted ? 5 : 2)
@@ -306,15 +309,15 @@ export class OrgChart {
                 const ex = t.x;
                 const ey = t.y;
 
-                let mx = m && m.x != null ? m.x : x;  // This is a changed line
-                let my = m && m.y != null ? m.y : y; // This also is a changed line
+                const mx = m && m.x != null ? m.x : x;  // This is a changed line
+                const my = m && m.y != null ? m.y : y; // This also is a changed line
 
                 // Values in case of top reversed and left reversed diagonals
-                let xrvs = ex - x < 0 ? -1 : 1;
-                let yrvs = ey - y < 0 ? -1 : 1;
+                const xrvs = ex - x < 0 ? -1 : 1;
+                const yrvs = ey - y < 0 ? -1 : 1;
 
                 // Define preferred curve radius
-                let rdef = 35;
+                const rdef = 35;
 
                 // Reduce curve radius, if source-target x space is smaller
                 let r = Math.abs(ex - x) / 2 < rdef ? Math.abs(ex - x) / 2 : rdef;
@@ -324,7 +327,7 @@ export class OrgChart {
 
                 // Defin width and height of link, excluding radius
                 // let h = Math.abs(ey - y) / 2 - r;
-                let w = Math.abs(ex - x) / 2 - r;
+                const w = Math.abs(ex - x) / 2 - r;
 
                 // Build and return custom arc command
                 return `
@@ -350,22 +353,22 @@ export class OrgChart {
                 const ex = t.x;
                 const ey = t.y;
 
-                let mx = m && m.x != null ? m.x : x;  // This is a changed line
-                let my = m && m.y != null ? m.y : y; // This also is a changed line
+                const mx = m && m.x != null ? m.x : x;  // This is a changed line
+                const my = m && m.y != null ? m.y : y; // This also is a changed line
 
-                let xrvs = ex - x < 0 ? -1 : 1;
-                let yrvs = ey - y < 0 ? -1 : 1;
+                const xrvs = ex - x < 0 ? -1 : 1;
+                const yrvs = ey - y < 0 ? -1 : 1;
 
                 y += (offsets.sy || 0);
 
 
-                let rdef = 35;
+                const rdef = 35;
                 let r = Math.abs(ex - x) / 2 < rdef ? Math.abs(ex - x) / 2 : rdef;
 
                 r = Math.abs(ey - y) / 2 < r ? Math.abs(ey - y) / 2 : r;
 
-                let h = Math.abs(ey - y) / 2 - r;
-                let w = Math.abs(ex - x) - r * 2;
+                const h = Math.abs(ey - y) / 2 - r;
+                const w = Math.abs(ex - x) - r * 2;
                 //w=0;
                 const path = `
                           M ${mx} ${my}
@@ -382,7 +385,7 @@ export class OrgChart {
                 return path;
             },
             // Defining arrows with markers for connections
-            defs: function (_state: OrgChartAttrs, visibleConnections: Connection[]) {
+            defs: function (_state: OrgChartAttrs<Datum>, visibleConnections: Connection<Datum>[]) {
                 return `<defs>
                     ${visibleConnections.map(conn => {
                     const labelWidth = 0; // Placeholder, will be calculated in actual rendering
@@ -399,7 +402,7 @@ export class OrgChart {
                     </defs>
                     `},
             /* You can update connections with custom styling using this function */
-            connectionsUpdate: function (this: SVGPathElement, d: Connection, _i: number, _arr: SVGPathElement[] | ArrayLike<SVGPathElement>) {
+            connectionsUpdate: function (this: SVGPathElement, d: Connection<Datum>, _i: number, _arr: SVGPathElement[] | ArrayLike<SVGPathElement>) {
                 d3.select(this)
                     .attr("stroke", () => '#E27396')
                     .attr('stroke-linecap', 'round')
@@ -440,7 +443,7 @@ export class OrgChart {
                     "linkParentY": node => node.parent!.y,
                     "buttonX": node => node.width,
                     "buttonY": node => node.height / 2,
-                    "centerTransform": ({ rootMargin, centerY, scale }: { root: OrgChartNode; rootMargin: number; scale: number; centerX: number; centerY: number }) => `translate(${rootMargin},${centerY}) scale(${scale})`,
+                    "centerTransform": ({ rootMargin, centerY, scale }: { root: OrgChartNode<Datum>; rootMargin: number; scale: number; centerX: number; centerY: number }) => `translate(${rootMargin},${centerY}) scale(${scale})`,
                     "compactDimension": {
                         sizeColumn: node => node.height,
                         sizeRow: node => node.width,
@@ -483,7 +486,7 @@ export class OrgChart {
                     "linkParentY": node => node.parent!.y + node.parent!.height,
                     "buttonX": node => node.width / 2,
                     "buttonY": node => node.height,
-                    "centerTransform": ({ rootMargin, scale, centerX }: { root: OrgChartNode; rootMargin: number; scale: number; centerX: number; centerY: number }) => `translate(${centerX},${rootMargin}) scale(${scale})`,
+                    "centerTransform": ({ rootMargin, scale, centerX }: { root: OrgChartNode<Datum>; rootMargin: number; scale: number; centerX: number; centerY: number }) => `translate(${centerX},${rootMargin}) scale(${scale})`,
                     "nodeFlexSize": ({ height, width, siblingsMargin, childrenMargin, state, node }) => {
                         if (state.compact && node.flexCompactDim) {
                             const result: [number, number] = [node.flexCompactDim[0], node.flexCompactDim[1]]
@@ -522,7 +525,7 @@ export class OrgChart {
                     "linkParentY": node => node.parent!.y - node.parent!.height,
                     "buttonX": node => node.width / 2,
                     "buttonY": _ => 0,
-                    "centerTransform": ({ rootMargin, scale, centerX }: { root: OrgChartNode; rootMargin: number; scale: number; centerX: number; centerY: number; chartHeight?: number; chartWidth?: number }) => {
+                    "centerTransform": ({ rootMargin, scale, centerX }: { root: OrgChartNode<Datum>; rootMargin: number; scale: number; centerX: number; centerY: number; chartHeight?: number; chartWidth?: number }) => {
                         const attrs = this.getChartState();
                         return `translate(${centerX},${attrs.calc!.chartHeight - rootMargin}) scale(${scale})`;
                     },
@@ -558,7 +561,7 @@ export class OrgChart {
                     "linkCompactYStart": node => node.y + (node.compactEven ? node.height / 2 : -node.height / 2),
                     "compactLinkMidX": (node, _) => node.firstCompactNode!.x,// node.firstCompactNode.x + node.firstCompactNode.flexCompactDim[0] / 4 + state.compactMarginPair(node) / 4,
                     "compactLinkMidY": (node, state) => node.firstCompactNode!.y + (node.firstCompactNode!.flexCompactDim ? node.firstCompactNode!.flexCompactDim[0] / 4 : 0) + state.compactMarginPair(node) / 4,
-                    "centerTransform": ({ rootMargin, centerY, scale }: { root: OrgChartNode; rootMargin: number; scale: number; centerX: number; centerY: number; chartWidth?: number; chartHeight?: number }) => {
+                    "centerTransform": ({ rootMargin, centerY, scale }: { root: OrgChartNode<Datum>; rootMargin: number; scale: number; centerX: number; centerY: number; chartWidth?: number; chartHeight?: number }) => {
                         const attrs = this.getChartState();
                         return `translate(${attrs.calc!.chartWidth - rootMargin},${centerY}) scale(${scale})`;
                     },
@@ -582,7 +585,7 @@ export class OrgChart {
                 },
             }
 
-        } as OrgChartAttrs;
+        } as OrgChartAttrs<Datum>;
 
         // Assign attrs to instance property
         this.attrs = attrs;
@@ -596,7 +599,7 @@ export class OrgChart {
             (this as any)[key] = function (_?: any) {
                 const chart = this as OrgChart;
                 if (!arguments.length) {
-                    return chart.attrs[key as keyof OrgChartAttrs];
+                    return chart.attrs[key as keyof OrgChartAttrs<Datum>];
                 } else {
                     (chart.attrs as any)[key] = _;
                 }
@@ -610,13 +613,13 @@ export class OrgChart {
     initializeEnterExitUpdatePattern(): void {
         //Adding custom patternify method to d3.selection prototype
         d3.selection.prototype.patternify = function (params: { selector: string; tag: string; data?: any[] | ((d: any) => any[]) }) {
-            var container = this;
-            var selector = params.selector;
-            var elementTag = params.tag;
-            var data = params.data || [selector];
+            const container = this;
+            const selector = params.selector;
+            const elementTag = params.tag;
+            const data = params.data || [selector];
 
             // Pattern in action
-            var selection = container.selectAll("." + selector).data(data, (d: any, i: number) => {
+            let selection = container.selectAll("." + selector).data(data, (d: any, i: number) => {
                 if (typeof d === "object") {
                     if (d.id) { return d.id; }
                 }
@@ -631,9 +634,9 @@ export class OrgChart {
 
     // This method retrieves passed node's children IDs (including node)
     getNodeChildren(
-        { data, children, _children }: { data: OrgChartNodeData; children?: OrgChartNode[]; _children?: OrgChartNode[] },
-        nodeStore: OrgChartNodeData[] = []
-    ): OrgChartNodeData[] {
+        { data, children, _children }: { data: Datum; children?: OrgChartNode<Datum>[]; _children?: OrgChartNode<Datum>[] },
+        nodeStore: Datum[] = []
+    ): Datum[] {
         // Store current node ID
         nodeStore.push(data);
 
@@ -725,7 +728,7 @@ export class OrgChart {
 
         //****************** ROOT node work ************************
 
-        attrs.flexTreeLayout = flextree<OrgChartNode>({
+        attrs.flexTreeLayout = flextree<Datum>({
             nodeSize: (node: any) => {
                 const width = attrs.nodeWidth(node);;
                 const height = attrs.nodeHeight(node);
@@ -733,7 +736,7 @@ export class OrgChart {
                 const childrenMargin = attrs.childrenMargin(node);
                 return attrs.layoutBindings[attrs.layout].nodeFlexSize({
                     state: attrs,
-                    node: node as OrgChartNode,
+                    node: node as OrgChartNode<Datum>,
                     width,
                     height,
                     siblingsMargin,
@@ -741,7 +744,7 @@ export class OrgChart {
                 });
             }
         })
-            .spacing((nodeA: any, nodeB: any) => nodeA.parent == nodeB.parent ? 0 : attrs.neighbourMargin(nodeA as OrgChartNode, nodeB as OrgChartNode));
+            .spacing((nodeA: any, nodeB: any) => nodeA.parent == nodeB.parent ? 0 : attrs.neighbourMargin(nodeA as OrgChartNode<Datum>, nodeB as OrgChartNode<Datum>));
 
         this.setLayouts({ expandNodesFirst: false });
 
@@ -854,7 +857,7 @@ export class OrgChart {
     }
 
     // This function can be invoked via chart.addNode API, and it adds node in tree at runtime
-    addNode(obj: OrgChartNodeData): this {
+    addNode(obj: Datum): this {
         const attrs = this.getChartState();
         if (obj && (attrs.parentNodeId(obj) == null || attrs.parentNodeId(obj) == attrs.nodeId(obj)) && (attrs.data?.length || 0) == 0) {
             attrs.data!.push(obj);
@@ -869,7 +872,7 @@ export class OrgChart {
             return this;
         }
 
-        if (obj._centered && !obj._expanded) obj._expanded = true;
+        if ((obj as any)._centered && !(obj as any)._expanded) (obj as any)._expanded = true;
         attrs.data!.push(obj);
 
         // Update state of nodes and redraw graph
@@ -895,10 +898,10 @@ export class OrgChart {
 
         // Mark all node children and node itself for removal
         nodeDescendants
-            .forEach(d => d.data._filteredOut = true)
+            .forEach(d => (d.data as any)._filteredOut = true)
 
         // Filter out retrieved nodes and reassign data
-        attrs.data = attrs.data!.filter(d => !d._filteredOut);
+        attrs.data = attrs.data!.filter(d => !(d as any)._filteredOut);
 
         if ((attrs.data?.length || 0) == 0) {
             this.render();
@@ -930,7 +933,7 @@ export class OrgChart {
         return Object.entries(grouped);
     }
 
-    calculateCompactFlexDimensions(root: OrgChartNode): void {
+    calculateCompactFlexDimensions(root: OrgChartNode<Datum>): void {
         const attrs = this.getChartState();
         root.eachBefore(node => {
             node.firstCompact = undefined;
@@ -971,7 +974,7 @@ export class OrgChart {
         })
     }
 
-    calculateCompactFlexPositions(root: OrgChartNode): void {
+    calculateCompactFlexPositions(root: OrgChartNode<Datum>): void {
         const attrs = this.getChartState();
         root.eachBefore(node => {
             if (node.children) {
@@ -1211,7 +1214,7 @@ export class OrgChart {
                     this.loadPagingNodes(node as any);
                     return;
                 }
-                if (!data._pagingButton) {
+                if (!(data as any)._pagingButton) {
                     attrs.onNodeClick(node as any);
                     return;
                 }
@@ -1391,7 +1394,7 @@ export class OrgChart {
             .duration(attrs.duration)
             .attr("transform", (_d: any) => {
 
-                let { x, y, width, height } = maxDepthNode.parent || {};
+                const { x, y, width, height } = maxDepthNode.parent || {};
                 const ex = attrs.layoutBindings[attrs.layout].nodeJoinX({ x, y, width, height } as any);
                 const ey = attrs.layoutBindings[attrs.layout].nodeJoinY({ x, y, width, height } as any);
                 return `translate(${ex},${ey})`
@@ -1445,13 +1448,13 @@ export class OrgChart {
     }
 
     // Generate horizontal diagonal - play with it here - https://observablehq.com/@bumbeishvili/curved-edges-horizontal-d3-v3-v4-v5-v6
-    hdiagonal(s: any, t: any, m?: any, offsets?: any): string {
+    hdiagonal(s: Point, t: Point, m?: Point | null, offsets?: any): string {
         const state = this.getChartState();
         return state.hdiagonal!(s, t, m, offsets);
     }
 
     // Generate custom diagonal - play with it here - https://observablehiq.com/@bumbeishvili/curved-edges
-    diagonal(s: any, t: any, m?: any, offsets?: any): string {
+    diagonal(s: Point, t: Point, m?: Point | null, offsets?: any): string {
         const state = this.getChartState();
         return state.diagonal!(s, t, m, offsets);
     }
@@ -1478,14 +1481,14 @@ export class OrgChart {
     }
 
     // Toggle children on click.
-    onButtonClick(event: any, d: OrgChartNode): void {
+    onButtonClick(event: any, d: OrgChartNode<Datum>): void {
         const attrs = this.getChartState();
         if (d.data._pagingButton) {
             return;
         }
         if (attrs.setActiveNodeCentered) {
-            d.data._centered = true;
-            d.data._centeredWithDescendants = true;
+            (d.data as any)._centered = true;
+            (d.data as any)._centeredWithDescendants = true;
         }
 
         // If childrens are expanded
@@ -1503,7 +1506,7 @@ export class OrgChart {
 
             // Set each children as expanded
             if (d.children) {
-                d.children.forEach(({ data }) => (data._expanded = true));
+                d.children.forEach(({ data }) => ((data as any)._expanded = true));
             }
         }
 
@@ -1517,9 +1520,9 @@ export class OrgChart {
     }
 
     // This function changes `expanded` property to descendants
-    setExpansionFlagToChildren({ data, children, _children }: OrgChartNode, flag: boolean): void {
+    setExpansionFlagToChildren({ data, children, _children }: OrgChartNode<Datum>, flag: boolean): void {
         // Set flag to the current property
-        data._expanded = flag;
+        (data as any)._expanded = flag;
 
         // Loop over and recursively update expanded children's descendants
         if (children) {
@@ -1538,9 +1541,9 @@ export class OrgChart {
 
 
     // Method which only expands nodes, which have property set "expanded=true"
-    expandSomeNodes(d: OrgChartNode): void {
+    expandSomeNodes(d: OrgChartNode<Datum>): void {
         // If node has expanded property set
-        if (d.data._expanded) {
+        if ((d.data as any)._expanded) {
             // Retrieve node's parent
             let parent = d.parent;
 
@@ -1582,18 +1585,18 @@ export class OrgChart {
         // Store new root by converting flat data to hierarchy
 
         const stratify = d3
-            .stratify<OrgChartNodeData>()
-            .id((d) => attrs.nodeId(d) as string)
-            .parentId(d => attrs.parentNodeId(d) as string);
+            .stratify<Datum>()
+            .id((d) => attrs.nodeId(d as any) as string)
+            .parentId(d => attrs.parentNodeId(d as any) as string);
 
-        attrs.generateRoot = ((data: OrgChartNodeData[]) => stratify(data) as OrgChartNode);
+        attrs.generateRoot = ((data: Datum[]) => stratify(data as any) as any as OrgChartNode<Datum>);
         attrs.root = attrs.generateRoot(attrs.data || []);
 
         const descendantsBefore = attrs.root.descendants();
         if (attrs.initialExpandLevel > 1 && descendantsBefore.length > 0) {
             descendantsBefore.forEach((d) => {
                 if (d.depth <= attrs.initialExpandLevel) {
-                    d.data._expanded = true;
+                    (d.data as any)._expanded = true;
                 }
             })
             attrs.initialExpandLevel = 1;
@@ -1644,9 +1647,9 @@ export class OrgChart {
 
 
         attrs.root = d3
-            .stratify<OrgChartNodeData>()
-            .id((d) => attrs.nodeId(d) as string)
-            .parentId(d => attrs.parentNodeId(d) as string)(attrs.data!.filter(d => hiddenNodesMap[attrs.nodeId(d) as string] !== true)) as OrgChartNode;
+            .stratify<Datum>()
+            .id((d) => attrs.nodeId(d as any) as string)
+            .parentId(d => attrs.parentNodeId(d as any) as string)(attrs.data!.filter(d => hiddenNodesMap[attrs.nodeId(d as any) as string] !== true) as any) as any as OrgChartNode<Datum>;
 
         attrs.root.each((node: OrgChartNode, _i: number, _thisNode: OrgChartNode) => {
             const _hierarchyHeight = (node as any)._hierarchyHeight || node.height
@@ -1731,7 +1734,7 @@ export class OrgChart {
 
     zoomTreeBounds({ x0, x1, y0, y1, params = { animate: true, scale: true, onCompleted: () => { } } }: ZoomToBoundsParams): void {
         const { centerG, svgWidth: w, svgHeight: h, svg, zoomBehavior, duration, lastTransform } = this.getChartState()
-        let scaleVal = Math.min(8, 0.9 / Math.max((x1 - x0) / w, (y1 - y0) / h));
+        const scaleVal = Math.min(8, 0.9 / Math.max((x1 - x0) / w, (y1 - y0) / h));
         let identity = d3.zoomIdentity.translate(w / 2, h / 2)
         identity = identity.scale(params?.scale ? scaleVal : lastTransform.k)
 
@@ -1749,7 +1752,7 @@ export class OrgChart {
     fit({ animate = true, nodes, scale = true, onCompleted = () => { } }: FitParams = {}): this {
         const attrs = this.getChartState();
         const { root } = attrs;
-        let descendants = nodes ? nodes : root!.descendants();
+        const descendants = nodes ? nodes : root!.descendants();
         const minX = d3.min(descendants, d => d.x + attrs.layoutBindings[attrs.layout].nodeLeftX(d)) || 0
         const maxX = d3.max(descendants, d => d.x + attrs.layoutBindings[attrs.layout].nodeRightX(d)) || 0
         const minY = d3.min(descendants, d => d.y + attrs.layoutBindings[attrs.layout].nodeTopY(d)) || 0
@@ -1922,7 +1925,7 @@ export class OrgChart {
         const { svg: svgImg } = attrs
         let count = 0;
         const selection = svgImg!.selectAll('img')
-        let total = selection.size()
+        const total = selection.size()
 
         const exportImage = () => {
             const duration = that.duration();
@@ -1976,7 +1979,7 @@ export class OrgChart {
 
     expandAll(): this {
         const { data } = this.getChartState();
-        data!.forEach(d => d._expanded = true)
+        data!.forEach(d => (d as any)._expanded = true)
         // allNodes.forEach(d => d.data._expanded = true);
         this.render()
         return this;
@@ -1996,7 +1999,7 @@ export class OrgChart {
 
         function saveAs(uri: string, filename: string): void {
             // create link
-            var link = document.createElement('a');
+            const link = document.createElement('a');
             if (typeof link.download === 'string') {
                 document.body.appendChild(link); // Firefox requires the link to be in the body
                 link.download = filename;
@@ -2035,7 +2038,7 @@ export class OrgChart {
             //add xml declaration
             source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
             //convert svg source to URI data scheme.
-            var url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+            const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
             saveAs(url, imageName + ".svg");
             onAlreadySerialized && onAlreadySerialized(source);
             return;
@@ -2057,7 +2060,7 @@ export class OrgChart {
             context!.fillRect(0, 0, rect.width * quality, rect.height * quality);
             context!.drawImage(image, 0, 0, rect.width * quality, rect.height * quality);
             // Set some image metadata
-            let dt = canvas.toDataURL('image/png');
+            const dt = canvas.toDataURL('image/png');
             if (onLoad) {
                 const img = new Image();
                 img.src = dt;
@@ -2070,7 +2073,7 @@ export class OrgChart {
 
         };
 
-        var url = 'data:image/svg+xml; charset=utf8, ' + encodeURIComponent(serializeString(svgNode));
+        const url = 'data:image/svg+xml; charset=utf8, ' + encodeURIComponent(serializeString(svgNode));
 
         onAlreadySerialized && onAlreadySerialized(serializeString(svgNode));
 

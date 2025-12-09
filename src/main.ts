@@ -1,6 +1,7 @@
 import './style.css'
 import { OrgChart } from './org-chart/d3-org-chart'
 import data from './org-chart/generated_org_data.json'
+import type { OrgChartNodeData } from './org-chart/types'
 
 // Setup the app container
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -21,10 +22,12 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   </div>
 `
 
+const dataList = data as OrgChartNodeData[]
+
 // Initialize the org chart
-const chart = new OrgChart()
+const chart = new OrgChart<OrgChartNodeData>()
   .container('#chart')
-  .data(data)
+  .data(dataList)
   .compact(false)
   .nodeWidth(() => 280)
   .nodeHeight(() => 150)
@@ -33,7 +36,7 @@ const chart = new OrgChart()
   .compactMarginPair(() => 30)
   .neighbourMargin(() => 50)
   .siblingsMargin(() => 20)
-  .nodeContent((d: any) => {
+  .nodeContent((d) => {
     const color = getColorByDepartment(d.data.department || 'Default')
     return `
       <div class="node-card" style="border-color: ${color}">
