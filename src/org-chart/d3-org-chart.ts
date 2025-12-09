@@ -593,19 +593,7 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
         // Assign getChartState method
         this.getChartState = () => this.attrs;
 
-        // Dynamically set getter and setter functions for Chart class
-        Object.keys(this.attrs).forEach((key) => {
-            // Dynamic property assignment for fluent API pattern
-            (this as any)[key] = function (_?: any) {
-                const chart = this as OrgChart;
-                if (!arguments.length) {
-                    return chart.attrs[key as keyof OrgChartAttrs<Datum>];
-                } else {
-                    (chart.attrs as any)[key] = _;
-                }
-                return chart;
-            };
-        });
+
 
         this.initializeEnterExitUpdatePattern();
     }
@@ -630,6 +618,232 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
             selection.attr("class", selector);
             return selection;
         };
+    }
+
+    // Configuration Methods
+    container(value?: string | HTMLElement): any {
+        if (arguments.length === 0) return this.attrs.container;
+        this.attrs.container = value!;
+        return this;
+    }
+    data(value?: Datum[]): any {
+        if (arguments.length === 0) return this.attrs.data;
+        this.attrs.data = value!;
+        return this;
+    }
+    svgWidth(value?: number): any {
+        if (arguments.length === 0) return this.attrs.svgWidth;
+        this.attrs.svgWidth = value!;
+        return this;
+    }
+    svgHeight(value?: number): any {
+        if (arguments.length === 0) return this.attrs.svgHeight;
+        this.attrs.svgHeight = value!;
+        return this;
+    }
+    compact(value?: boolean): any {
+        if (arguments.length === 0) return this.attrs.compact;
+        this.attrs.compact = value!;
+        return this;
+    }
+    layout(value?: LayoutType): any {
+        if (arguments.length === 0) return this.attrs.layout;
+        this.attrs.layout = value!;
+        return this;
+    }
+    duration(value?: number): any {
+        if (arguments.length === 0) return this.attrs.duration;
+        this.attrs.duration = value!;
+        return this;
+    }
+    connections(value?: Connection<Datum>[]): any {
+        if (arguments.length === 0) return this.attrs.connections;
+        this.attrs.connections = value!;
+        return this;
+    }
+    rootMargin(value?: number): any {
+        if (arguments.length === 0) return this.attrs.rootMargin;
+        this.attrs.rootMargin = value!;
+        return this;
+    }
+    setActiveNodeCentered(value?: boolean): any {
+        if (arguments.length === 0) return this.attrs.setActiveNodeCentered;
+        this.attrs.setActiveNodeCentered = value!;
+        return this;
+    }
+    scaleExtent(value?: [number, number]): any {
+        if (arguments.length === 0) return this.attrs.scaleExtent;
+        this.attrs.scaleExtent = value!;
+        return this;
+    }
+    defaultFont(value?: string): any {
+        if (arguments.length === 0) return this.attrs.defaultFont;
+        this.attrs.defaultFont = value!;
+        return this;
+    }
+    imageName(value?: string): any {
+        if (arguments.length === 0) return this.attrs.imageName;
+        this.attrs.imageName = value!;
+        return this;
+    }
+    linkYOffset(value?: number): any {
+        if (arguments.length === 0) return this.attrs.linkYOffset;
+        this.attrs.linkYOffset = value!;
+        return this;
+    }
+
+    // Accessor Methods
+    nodeId(value?: DataAccessor<string | number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeId;
+        this.attrs.nodeId = value!;
+        return this;
+    }
+    parentNodeId(value?: DataAccessor<string | number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.parentNodeId;
+        this.attrs.parentNodeId = value!;
+        return this;
+    }
+    nodeWidth(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeWidth;
+        this.attrs.nodeWidth = value!;
+        return this;
+    }
+    nodeHeight(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeHeight;
+        this.attrs.nodeHeight = value!;
+        return this;
+    }
+    siblingsMargin(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.siblingsMargin;
+        this.attrs.siblingsMargin = value!;
+        return this;
+    }
+    childrenMargin(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.childrenMargin;
+        this.attrs.childrenMargin = value!;
+        return this;
+    }
+    neighbourMargin(value?: (node1: OrgChartNode<Datum>, node2: OrgChartNode<Datum>) => number): any {
+        if (arguments.length === 0) return this.attrs.neighbourMargin;
+        this.attrs.neighbourMargin = value!;
+        return this;
+    }
+    compactMarginPair(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.compactMarginPair;
+        this.attrs.compactMarginPair = value!;
+        return this;
+    }
+    compactMarginBetween(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.compactMarginBetween;
+        this.attrs.compactMarginBetween = value!;
+        return this;
+    }
+    nodeButtonWidth(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeButtonWidth;
+        this.attrs.nodeButtonWidth = value!;
+        return this;
+    }
+    nodeButtonHeight(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeButtonHeight;
+        this.attrs.nodeButtonHeight = value!;
+        return this;
+    }
+    nodeButtonX(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeButtonX;
+        this.attrs.nodeButtonX = value!;
+        return this;
+    }
+    nodeButtonY(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeButtonY;
+        this.attrs.nodeButtonY = value!;
+        return this;
+    }
+    pagingStep(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.pagingStep;
+        this.attrs.pagingStep = value!;
+        return this;
+    }
+    minPagingVisibleNodes(value?: NodeAccessor<number, Datum>): any {
+        if (arguments.length === 0) return this.attrs.minPagingVisibleNodes;
+        this.attrs.minPagingVisibleNodes = value!;
+        return this;
+    }
+
+    // Callback Methods
+    nodeContent(value?: NodeContentCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeContent;
+        this.attrs.nodeContent = value!;
+        return this;
+    }
+    buttonContent(value?: ButtonContentCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.buttonContent;
+        this.attrs.buttonContent = value!;
+        return this;
+    }
+    pagingButton(value?: PagingButtonCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.pagingButton;
+        this.attrs.pagingButton = value!;
+        return this;
+    }
+    onNodeClick(value?: NodeClickCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.onNodeClick;
+        this.attrs.onNodeClick = value!;
+        return this;
+    }
+    onExpandOrCollapse(value?: NodeExpandCollapseCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.onExpandOrCollapse;
+        this.attrs.onExpandOrCollapse = value!;
+        return this;
+    }
+    onZoomStart(value?: ZoomCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.onZoomStart;
+        this.attrs.onZoomStart = value!;
+        return this;
+    }
+    onZoom(value?: ZoomCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.onZoom;
+        this.attrs.onZoom = value!;
+        return this;
+    }
+    onZoomEnd(value?: ZoomCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.onZoomEnd;
+        this.attrs.onZoomEnd = value!;
+        return this;
+    }
+    nodeUpdate(value?: NodeUpdateCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeUpdate;
+        this.attrs.nodeUpdate = value!;
+        return this;
+    }
+    nodeEnter(value?: NodeEnterCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeEnter;
+        this.attrs.nodeEnter = value!;
+        return this;
+    }
+    nodeExit(value?: NodeExitCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.nodeExit;
+        this.attrs.nodeExit = value!;
+        return this;
+    }
+    linkUpdate(value?: LinkUpdateCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.linkUpdate;
+        this.attrs.linkUpdate = value!;
+        return this;
+    }
+    connectionsUpdate(value?: ConnectionsUpdateCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.connectionsUpdate;
+        this.attrs.connectionsUpdate = value!;
+        return this;
+    }
+    defs(value?: DefsCallback<Datum>): any {
+        if (arguments.length === 0) return this.attrs.defs;
+        this.attrs.defs = value!;
+        return this;
+    }
+    lastTransform(value?: { x: number; y: number; k: number }): any {
+        if (arguments.length === 0) return this.attrs.lastTransform;
+        this.attrs.lastTransform = value!;
+        return this;
     }
 
     // This method retrieves passed node's children IDs (including node)
