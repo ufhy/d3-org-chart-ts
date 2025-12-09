@@ -459,7 +459,11 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
                     },
                     "zoomTransform": ({ x, y, k }: { x: number; y: number; k: number }) => `translate(${x},${y}) scale(${k})`,
                     "diagonal": this.hdiagonal.bind(this),
-                    "swap": d => { const x = d.x; d.x = d.y; d.y = x; },
+                    "swap": d => {
+                        const x = d.x;
+                        d.x = d.y;
+                        d.y = x;
+                    },
                     "nodeUpdateTransform": ({ x, y, height }) => `translate(${x},${y - height / 2})`,
                 },
                 "top": {
@@ -539,7 +543,9 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
                     },
                     "zoomTransform": ({ x, y, k }: { x: number; y: number; k: number }) => `translate(${x},${y}) scale(${k})`,
                     "diagonal": this.diagonal.bind(this),
-                    "swap": d => { d.y = -d.y; },
+                    "swap": d => {
+                        d.y = -d.y;
+                    },
                     "nodeUpdateTransform": ({ x, y, width, height }) => `translate(${x - width / 2},${y - height})`,
                 },
                 "right": {
@@ -580,7 +586,11 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
                     },
                     "zoomTransform": ({ x, y, k }: { x: number; y: number; k: number }) => `translate(${x},${y}) scale(${k})`,
                     "diagonal": this.hdiagonal.bind(this),
-                    "swap": d => { const x = d.x; d.x = -d.y; d.y = x; },
+                    "swap": d => {
+                        const x = d.x;
+                        d.x = -d.y;
+                        d.y = x;
+                    },
                     "nodeUpdateTransform": ({ x, y, width, height }) => `translate(${x - width},${y - height / 2})`,
                 },
             }
