@@ -543,7 +543,7 @@ declare module 'd3-selection' {
      * @param params - Configuration object with selector, tag, and optional data
      * @returns Selection with the patternified elements
      */
-    patternify(params: PatternifyParams): Selection<GElement, any, PElement, PDatum>;
+    patternify: (params: PatternifyParams) => Selection<GElement, any, PElement, PDatum>
   }
 }
 
