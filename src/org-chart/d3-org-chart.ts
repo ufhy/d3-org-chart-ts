@@ -2237,22 +2237,66 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
             const xmlns = 'http://www.w3.org/2000/xmlns/';
             const xlinkns = 'http://www.w3.org/1999/xlink';
             const svgns = 'http://www.w3.org/2000/svg';
-            svg = svg.cloneNode(true);
-            const fragment = window.location.href + '#';
-            const walker = document.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
-            while (walker.nextNode()) {
-                const currentNode = walker.currentNode as Element;
-                for (const attr of Array.from(currentNode.attributes)) {
-                    if (attr.value.includes(fragment)) {
-                        attr.value = attr.value.replace(fragment, '#');
+
+            // Clone the SVG
+            const clonedSvg = svg.cloneNode(true);
+
+            // Copy computed styles from original to cloned elements
+            const originalWalker = document.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT);
+            const clonedWalker = document.createTreeWalker(clonedSvg, NodeFilter.SHOW_ELEMENT);
+
+            // Process root SVG element
+            copyComputedStyle(svg, clonedSvg);
+
+            // Process all child elements
+            while (originalWalker.nextNode() && clonedWalker.nextNode()) {
+                const originalNode = originalWalker.currentNode as Element;
+                const clonedNode = clonedWalker.currentNode as Element;
+
+                // Copy computed styles
+                copyComputedStyle(originalNode, clonedNode);
+
+                // Fix fragment references
+                for (const attr of Array.from(clonedNode.attributes)) {
+                    if (attr.value.includes(window.location.href + '#')) {
+                        attr.value = attr.value.replace(window.location.href + '#', '#');
                     }
                 }
             }
-            svg.setAttributeNS(xmlns, 'xmlns', svgns);
-            svg.setAttributeNS(xmlns, 'xmlns:xlink', xlinkns);
+
+            clonedSvg.setAttributeNS(xmlns, 'xmlns', svgns);
+            clonedSvg.setAttributeNS(xmlns, 'xmlns:xlink', xlinkns);
             const serializer = new XMLSerializer();
-            const string = serializer.serializeToString(svg);
+            const string = serializer.serializeToString(clonedSvg);
             return string;
+        }
+
+        // Helper function to copy computed styles
+        function copyComputedStyle(source: Element, target: Element) {
+            const computedStyle = window.getComputedStyle(source);
+
+            // List of CSS properties to copy
+            const propertiesToCopy = [
+                'font-family', 'font-size', 'font-weight', 'font-style',
+                'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin',
+                'opacity', 'color',
+                'text-anchor', 'dominant-baseline', 'alignment-baseline',
+                'display', 'visibility',
+                'transform', 'transform-origin',
+                'background', 'background-color',
+                'border', 'border-width', 'border-color', 'border-style', 'border-radius',
+                'padding', 'margin',
+                'width', 'height',
+                'overflow'
+            ];
+
+            // Apply computed styles as inline styles
+            propertiesToCopy.forEach(property => {
+                const value = computedStyle.getPropertyValue(property);
+                if (value && value !== '' && value !== 'none') {
+                    (target as HTMLElement).style.setProperty(property, value);
+                }
+            });
         }
 
         if (isSvg) {
