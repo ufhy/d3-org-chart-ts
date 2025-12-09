@@ -2122,12 +2122,19 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
     toDataURL(url: string, callback: (result: string | ArrayBuffer | null) => void): void {
         const xhr = new XMLHttpRequest();
         xhr.onload = function () {
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                callback(reader.result);
+            if (xhr.status >= 200 && xhr.status < 300) {
+                const reader = new FileReader();
+                reader.onloadend = function () {
+                    callback(reader.result);
+                }
+                reader.readAsDataURL(xhr.response);
+            } else {
+                callback(null)
             }
-            reader.readAsDataURL(xhr.response);
         };
+        xhr.onerror = function () {
+            callback(null)
+        }
         xhr.open('GET', url);
         xhr.responseType = 'blob';
         xhr.send();
@@ -2170,7 +2177,7 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
                 .each(function (this: any) {
                     const imgElement = this as HTMLImageElement;
                     that.toDataURL(imgElement.src, (dataUrl) => {
-                        imgElement.src = dataUrl as string;
+                        if (dataUrl) imgElement.src = dataUrl as string;
                         if (++count == total) {
                             exportImage();
                         }
@@ -2179,6 +2186,7 @@ export class OrgChart<Datum = any> implements IOrgChart<Datum> {
         } else {
             exportImage();
         }
+
 
 
     }
